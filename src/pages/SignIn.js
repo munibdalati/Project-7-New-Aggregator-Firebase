@@ -1,7 +1,42 @@
 import React from "react";
 import "../assets/index.css";
+import { useRef } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useState } from "react";
+import { Alert } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignIn = () => {
+  const emailRef = useRef()
+  const passwordRef = useRef()
+  const { SignIn } = useAuth()
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
+  const navigate  = useNavigate()
+
+  
+
+  async function handleSubmit(e){
+
+    e.preventDefault()
+
+    
+
+
+    try {
+      setError("")
+      setLoading(true)
+
+      await SignIn(emailRef.current.value, passwordRef.current.value)
+      navigate("/Profile")
+
+    }
+    catch{
+      setError("Failed to login")
+    }
+setLoading(false)
+  }
+
   return (
     <section>
       <div className="col col-md-9 col-lg-12  mt-5">
@@ -13,7 +48,8 @@ const SignIn = () => {
             <div className="row text-center mt-md-5 mb-md-5">
               <h4 style={{ color: "#27374D" }}>تسجيل الدخول</h4>
             </div>
-            <form className="mb-5">
+          {error && <Alert variant="danger">{error}</Alert>}
+          <form className="mb-5" onSubmit={handleSubmit}>
               {/* <!-- Email input --> */}
               <div className="form-outline mb-4">
                 <input
@@ -21,6 +57,7 @@ const SignIn = () => {
                   typeName="email"
                   id="email"
                   class="form-control"
+                  ref={emailRef} required
                 />
                 <label
                   id="email-error"
@@ -36,6 +73,7 @@ const SignIn = () => {
                   typeName="password"
                   id="pass"
                   class="form-control"
+                  ref={passwordRef} required
                 />
                 <label
                   id="pass-error"
@@ -73,8 +111,9 @@ const SignIn = () => {
               {/* <!-- Submit button --> */}
               <div class="row ps-5 pe-5 ">
                 <button
-                  type="button"
+                  type="submit"
                   id="signUp-btn"
+                  disabled={loading}
                   className="btn btn-block mb-4 login-btn "
                   style={{
                     color: "#fff",
@@ -90,9 +129,7 @@ const SignIn = () => {
               <div className="text-center">
                 <p>
                   ليس لديك حساب؟{" "}
-                  <a href="signup.html" style={{ color: "#27374D" }}>
-                    انشئ حساب
-                  </a>
+                  <Link to="/signUp" style={{ color: "#27374D" }}> أنشئ حساب</Link>
                 </p>
                 <p>أو سجل الدخول بواسطة:</p>
                 <button type="button" class="btn btn-link btn-floating mx-1">
